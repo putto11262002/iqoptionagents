@@ -1,0 +1,19 @@
+{
+  "user_id": 141527657,
+  "id": 13607084149,
+  "price": 30,
+  "exp": 1770899424,
+  "created": 1770899394,
+  "type": "blitz",
+  "act": 76,
+  "direction": "call",
+  "value": 1.082510,
+  "profit_income": 55.8,
+  "profit_return": 0,
+  "rollover_params": {
+    "amount_multiplier": 2,
+    "max_count": 1,
+    "offset": 0,
+    "deadtime": 7
+  }
+}

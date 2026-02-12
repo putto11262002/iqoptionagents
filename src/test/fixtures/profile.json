@@ -1,0 +1,125 @@
+{
+  "account_status": "NONE",
+  "address": "61 Pattanakarn 65, Prawet",
+  "auth_two_factor": false,
+  "avatar": "",
+  "balance": 0,
+  "balance_id": 1090667706,
+  "balance_type": 0,
+  "balances": [],
+  "birthdate": 1038283200,
+  "bonus_total_wager": 0,
+  "bonus_wager": 0,
+  "cashback_level_info": {
+    "enabled": false
+  },
+  "city": "Bangkok",
+  "client_category_id": 1,
+  "company_id": 2,
+  "confirmation_required": 0,
+  "confirmed_phones": [
+    "66 *****7485"
+  ],
+  "country_id": 194,
+  "created": 1669510834,
+  "currency": "THB",
+  "currency_char": "฿",
+  "currency_id": 64,
+  "demo": 0,
+  "deposit_count": 71,
+  "deposit_in_one_click": false,
+  "email": "putsuthisrisinlpa@gmail.com",
+  "finance_state": "",
+  "first_name": "Put",
+  "flag": "TH",
+  "forget_status": {
+    "status": "none",
+    "created": null,
+    "expires": null
+  },
+  "functions": [],
+  "gender": "male",
+  "group_id": 191,
+  "id": 141527657,
+  "infeed": 1,
+  "is_activated": true,
+  "is_islamic": false,
+  "is_vip_group": false,
+  "kyc": {
+    "status": 1,
+    "isPhoneFilled": false,
+    "isPhoneNeeded": false,
+    "isProfileFilled": false,
+    "isProfileNeeded": false,
+    "isRegulatedUser": false,
+    "daysLeftToVerify": -1,
+    "isPhoneConfirmed": false,
+    "isDocumentsNeeded": false,
+    "isDocumentsApproved": false,
+    "isDocumentsDeclined": false,
+    "isDocumentsUploaded": false,
+    "isDocumentPoaUploaded": false,
+    "isDocumentPoiUploaded": false,
+    "isDocumentsUploadSkipped": false,
+    "isPhoneConfirmationSkipped": false
+  },
+  "kyc_confirmed": false,
+  "last_name": "Suthisrisinlpa",
+  "last_visit": false,
+  "locale": "th_TH",
+  "mask": "฿ %s",
+  "messages": 0,
+  "money": {
+    "deposit": {
+      "min": 0,
+      "max": 0
+    },
+    "withdraw": {
+      "min": 0,
+      "max": 0
+    }
+  },
+  "name": "Put Suthisrisinlpa",
+  "nationality": "ไทย",
+  "need_phone_confirmation": false,
+  "new_email": "",
+  "nickname": "Kayden Cooper",
+  "personal_data_policy": {
+    "is_call_accepted": {
+      "status": true
+    },
+    "is_push_accepted": {
+      "status": true
+    },
+    "is_email_accepted": {
+      "status": true
+    },
+    "is_agreement_accepted": {
+      "status": true
+    },
+    "is_thirdparty_accepted": {
+      "status": true
+    }
+  },
+  "phone": "66 *****7485",
+  "popup": [],
+  "postal_index": "10250",
+  "public": 0,
+  "rate_in_one_click": false,
+  "site_id": 1,
+  "skey": "23296f44d15085ef3243e4132fda127f",
+  "socials": {},
+  "ssid": false,
+  "tc": true,
+  "timediff": 14400,
+  "tin": "",
+  "tournaments_ids": null,
+  "trade_restricted": false,
+  "trial": false,
+  "tz": "Asia/Bangkok",
+  "tz_offset": 420,
+  "user_circle": null,
+  "user_group": "Asia_Default",
+  "user_id": 141527657,
+  "welcome_splash": 0
+}
