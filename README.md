@@ -27,71 +27,30 @@ TRADE_AMOUNT=50 EXPIRATION_SIZE=30 CANDLE_SIZE=1 bun start -- 76
 
 ## Architecture
 
-```
-src/
-  client/           WebSocket transport + protocol layer
-    ws.ts             Raw WebSocket connection, message dispatch, reconnect
-    protocol.ts       Request/response tracking (request_id-based), subscribe/unsubscribe
-    auth.ts           HTTP login + WS authentication
+The system is organized into four layers, each depending only on the layer below it.
 
-  schemas/          Zod schemas — single source of truth for all types
-    common.ts         WsMessage, SendMessageBody envelopes
-    account.ts        ProfileSchema, BalanceSchema, BalanceChangedSchema
-    assets.ts         BlitzOptionConfigSchema, ActiveSchema
-    candles.ts        CandleSchema (with low/high aliases), CandlesResponseSchema
-    trading.ts        TradeRequest/Response, PositionSchema, OrderSchema + response wrappers
-    subscriptions.ts  TradersMoodSchema
+### Transport Layer
 
-  api/              Protocol-level API classes (one per domain)
-    account.ts        Profile, balances, balance-changed subscription, change-balance
-    assets.ts         Initialization data, active lookup, blitz-option config parsing
-    candles.ts        Real-time candle subscription + historical candle fetch
-    trading.ts        Place trades, positions, orders, history
-    subscriptions.ts  Traders mood, instruments-list
+Manages the raw WebSocket connection to `wss://ws.iqoption.com/echo/websocket`. Handles connect/reconnect, JSON frame parsing, and message dispatch by name. The protocol component sits on top, tracking in-flight requests by `request_id` and providing `sendMessage`, `subscribe`, and `unsubscribe` primitives. Authentication is a two-step flow: HTTP login for an SSID token, then a WS `authenticate` message.
 
-  env/              Agent-environment interface
-    types.ts          Agent, Sensor, Action, Observation interfaces
-    environment.ts    Orchestrator — wires APIs, sensors, state, runs agents
-    sensors.ts        SensorManager — candle, mood, position, order, balance streams
-    actions.ts        ActionExecutor — translates agent actions into API calls
-    state.ts          EnvironmentState — balance, open positions, win/loss tracking
+### API Layer
 
-  bot/              Trading agents
-    agents/
-      momentum.ts     Example agent: trade on N consecutive bullish/bearish candles
+Five domain-specific classes that map 1:1 to protocol concerns: **Account**, **Assets**, **Candles**, **Trading**, and **Subscriptions**. Each method sends an RPC or subscribes to a push event, then validates the response through a Zod schema using `safeParse`. On validation failure, a warning is logged and the raw data is returned — this means a protocol change degrades gracefully instead of crashing.
 
-  types/index.ts    Bridge file — re-exports all types from schemas
+### Environment Layer
 
-  test/
-    contract.test.ts    Schema validation against real server fixtures
-    protocol.test.ts    Protocol unit tests
-    capture-fixtures.ts Script to capture fresh fixtures from live server
-    fixtures/           JSON fixtures from real server responses
-```
+The bridge between the IQ Option API and agent code. **TradingEnvironment** orchestrates startup (fetch profile, balance, assets, subscribe to balance updates and position changes), then exposes an observation/action interface. **SensorManager** buffers incoming data streams (candles, mood, positions, orders). **ActionExecutor** translates agent actions (`trade`, `subscribe`, `query`) into API calls. **EnvironmentState** tracks balance, open positions, and win/loss stats — updated in real-time via `balance-changed` and `position-changed` push events.
 
-### Data Flow
+### Agent Layer
 
-```
-IQ Option Server
-    ↕ WebSocket (JSON frames)
-IQWebSocket (ws.ts)
-    ↕ dispatch by message name
-Protocol (protocol.ts)
-    ↕ request_id tracking, subscribe/unsubscribe
-API classes (account, assets, candles, trading, subscriptions)
-    ↕ Zod-validated responses
-TradingEnvironment (environment.ts)
-    ↕ Observation/Action cycle
-Agent (your code)
-```
+Your trading logic. Agents implement a three-method interface: `initialize` (subscribe to sensors), `onObservation` (receive data, return actions), and `onTradeResult` (handle trade outcomes). The included `MomentumAgent` demonstrates the pattern — it trades on N consecutive bullish/bearish candles.
 
-### Key Design Decisions
+### Schema Layer
 
-- **Zod schemas are the type source.** `types/index.ts` re-exports from `schemas/`. Never define types manually — derive them with `z.infer<>`.
-- **`safeParse` with fallback.** Every API method uses `safeParse` so a schema mismatch logs a warning but doesn't crash. This lets you discover protocol changes without downtime.
-- **`request_id`-based resolution.** The protocol layer matches responses by `request_id`, not by message name. This avoids race conditions when multiple RPCs are in flight.
-- **Server says `min`/`max`, we alias to `low`/`high`.** `CandleSchema` has a `.transform()` that adds `low`/`high` aliases. Both names are available on the `Candle` type.
-- **Server says `"loose"` not `"lose"`.** The `PositionSchema` matches the server spelling.
+All types are derived from Zod schemas via `z.infer<>`. Schemas live in `src/schemas/`, and `src/types/index.ts` re-exports them as a bridge so imports like `from "../types/index.ts"` work everywhere. Notable quirks the schemas handle:
+- Server sends `min`/`max` for candles — `CandleSchema` transforms these to `low`/`high` aliases
+- Server spells it `"loose"` not `"lose"` — `PositionSchema` matches the server spelling
+- `balance-changed` wraps data in `{ current_balance: { ... } }` — `BalanceChangedSchema` unwraps this
 
 ## Writing a New Agent
 
